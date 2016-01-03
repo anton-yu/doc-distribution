@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+  <title>Distribution Database</title>
+
+  <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+
+  <script src="../static/jquery-1.11.3.min.js"></script>
+
+  <style>
+    table {border-collapse: collapse; }
+    table,th {text-align: center; }
+    th { padding: 5px; height: 25px; background: #0e0b52; color: #fff;}
+    td { padding: 5px; } 
+    footer {margin-top: 30px;}
+  </style> 
+
+</head>
+ 
+<body>
+ 
+  <div class="container"> 
+    <div class="jumbotron">
+      <h3>Distribution</h3>
+
+      <form class="form-horizontal" role="form" method="POST" action="">
+          <div class="form-group">
+              <label for="title" class="col-sm-2 control-label">Title</label>
+              <div class="col-sm-10">
+                  <input type="text" class="form-control" id="title" name="inputTitle" placeholder="Film Title" value="">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label for="cast" class="col-sm-2 control-label">Cast</label>
+              <div class="col-sm-10">
+                  <input type="text" class="form-control" id="cast" name="inputCast" placeholder="Cast" value="">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label for="director" class="col-sm-2 control-label">Director</label>
+              <div class="col-sm-10">
+                  <input type="text" class="form-control" id="director" name="inputDirector" placeholder="Director" value="">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <div class="col-sm-12">
+                  <input id="btnSend" name="submit" type="submit" value="Send" class="btn btn-primary">
+              </div>
+          </div>
+      </form>
+
+    </div>
+
+    <div>
+      {% if films %}
+
+        {% if person %}
+        <h3 style="text-align:center;"> {{ person }} </h3>
+        {% endif %}
+
+        <table align="center" class="table-bordered table-striped" id="filmTable" border="1">
+
+          <tr>
+            <th>Title</th>
+            <th>Year</th>
+            <th>Runtime</th>
+            <th>IMDb Distributor</th>
+            <th>Distributor</th>
+          </tr>
+        
+          {% for film in films %}
+          <tr>
+            <td>{{ film[1] }}</td>
+            <td>{{ film[2] }}</td>
+            <td>{{ film[3] }}</td>
+            <td>{{ film[4] }}</td>
+            <td>{{ film[5] }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+    </div>
+
+    <footer class="footer">
+        <p>&copy; Doc Films 2016</p>
+    </footer>
+
+  </div>
+</body>
+ 
+</html>
