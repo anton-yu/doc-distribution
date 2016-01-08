@@ -16,7 +16,7 @@ class Film:
     self.runtime = 0
 
 def add_films (films):
-    infile = open("distributors.list", "r") # TODO: pull directly from URL? need to untar
+    infile = open("distributors.list", "r") 
 
     film_id = 0
 
@@ -53,6 +53,9 @@ def add_films (films):
                         continue
                     imdb_distr = imdb_distr.rstrip();
 
+                    if "Path" in imdb_distr:
+                        imdb_distr = "Pathe Freres"
+
                     distributor = imdb_distr
                     if any(x in distributor for x in Swank):
                         distributor = "Swank"
@@ -69,7 +72,7 @@ def add_films (films):
     infile.close()
 
 def add_runtimes (films):
-    infile = open("running-times.list", "r") # TODO: pull directly from URL? need to untar
+    infile = open("running-times.list", "r") 
 
     for line in infile:
         if line[0] != '"': # skip TV episodes 
@@ -90,6 +93,30 @@ def add_runtimes (films):
                     if "USA" not in rest:
                         continue
                 f.runtime = runtime
+
+    infile.close()
+
+def update_titles (films):
+    infile = open("aka-titles.list", "r")
+
+    title = ""
+    year = ""
+
+    for line in infile:
+        if line[0] != '"': # skip TV episodes
+            if not line[0].isspace():
+                index = line.find('(') # find index of opening parenthesis      
+                title = line[0:index-1] # use index to parse title 
+                year = line[index+1:index+5] # use index to parse year
+            else:
+                line = line[8:]
+                if "International: English title" in line or "USA" in line and "dubbed" not in line:
+                    key = title + year
+                    if key in films:
+                        f = films[key]
+                        index = line.find('(')
+                        f.title = line[0:index-1] # update new title
+                        title = "" # to be safe
 
     infile.close()
 
@@ -145,6 +172,7 @@ def main():
 
     add_films(films) # parse films from distributors.list
     add_runtimes(films)
+    update_titles(films)
 
     outfile = open("films.txt", "w")
     for key in films:

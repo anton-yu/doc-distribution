@@ -1,17 +1,12 @@
 #!/bin/bash --
 
 # Retrieve input files from IMDb
-URLS=(ftp://ftp.fu-berlin.de/pub/misc/movies/database/distributors.list.gz, 
-  ftp://ftp.fu-berlin.de/pub/misc/movies/database/directors.list.gz, 
-  ftp://ftp.fu-berlin.de/pub/misc/movies/database/actors.list.gz,
-  ftp://ftp.fu-berlin.de/pub/misc/movies/database/actresses.list.gz,
-  ftp://ftp.fu-berlin.de/pub/misc/movies/database/running-times.list.gz )
-
 curl ftp://ftp.fu-berlin.de/pub/misc/movies/database/distributors.list.gz | gzip -d > distributors.list
 curl ftp://ftp.fu-berlin.de/pub/misc/movies/database/directors.list.gz | gzip -d > directors.list
 curl ftp://ftp.fu-berlin.de/pub/misc/movies/database/actors.list.gz | gzip -d > actors.list
 curl ftp://ftp.fu-berlin.de/pub/misc/movies/database/actresses.list.gz | gzip -d > actresses.list
-curl ftp://ftp.fu-berlin.de/pub/misc/movies/database/running-times.list.gz | gzip -d > runtimes.list
+curl ftp://ftp.fu-berlin.de/pub/misc/movies/database/running-times.list.gz | gzip -d > running-times.list
+curl ftp://ftp.fu-berlin.de/pub/misc/movies/database/aka-titles.list.gz | gzip -d > aka-titles.list
 
 # for ((i=0;i<${#URLS[@]};++i)); do
 #   curl ${URLS[i]} | gzip -d > ${FILES[i]}

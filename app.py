@@ -1,41 +1,39 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
-import sqlite3
-from flask import Flask, render_template, json, request, g
-app = Flask(__name__)
+import imp
+import os
+import sys
 
-DATABASE = './distributors.db'
-
-@app.before_request
-def get_db():
-  g.db = sqlite3.connect(DATABASE)
-
-@app.teardown_request
-def close_connection(exception):
-  db = getattr(g, '_database', None)
-  if db is not None:
-      db.close()
-
-@app.route('/')
-def index():
-  return render_template('index.html')
-
-@app.route('/', methods=['POST'])
-def title_query():
-  if request.form['inputTitle']:
-    title = request.form['inputTitle']
-    # sql = "select * from films where title like '%"+title+"%'"
-    # films = g.db.execute(sql).fetchall()
-    films = g.db.execute('SELECT * FROM Films WHERE Title = ?', [title]).fetchall()
-    return render_template('index.html', films = films)
-  elif request.form['inputCast']:
-    cast = request.form['inputCast']
-    films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Appearances WHERE People.Person_ID = Appearances.Person_ID AND Films.Film_ID = Appearances.Film_ID AND Name = ? ORDER BY Year', [cast]).fetchall()
-    return render_template('index.html', person = cast, films = films)
+try:
+  virtenv = os.path.join(os.environ.get('OPENSHIFT_PYTHON_DIR','.'), 'virtenv')
+  python_version = "python"+str(sys.version_info[0])+"."+str(sys.version_info[1]) 
+  os.environ['PYTHON_EGG_CACHE'] = os.path.join(virtenv, 'lib', python_version, 'site-packages')
+  virtualenv = os.path.join(virtenv, 'bin','activate_this.py')
+  if(sys.version_info[0] < 3):
+    execfile(virtualenv, dict(__file__=virtualenv))
   else:
-    director = request.form['inputDirector']
-    films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Directs WHERE People.Person_ID = Directs.Person_ID AND Films.Film_ID = Directs.Film_ID AND Name = ? ORDER BY Year', [director]).fetchall()
-    return render_template('index.html', person = director, films = films)
+    exec(open(virtualenv).read(), dict(__file__=virtualenv))
+    
+except IOError:
+  pass
 
+#
+# IMPORTANT: Put any additional includes below this line.  If placed above this
+# line, it's possible required libraries won't be in your searchable path
+#
+
+#
+#  main():
+#
 if __name__ == '__main__':
-  app.run()
+  application = imp.load_source('app', 'flaskapp.py')
+  port = application.app.config['PORT']
+  ip = application.app.config['IP']
+  app_name = application.app.config['APP_NAME']
+  host_name = application.app.config['HOST_NAME']
+
+  imp.find_module("flask")
+  from flask import Flask
+  server = Flask(__name__)
+  server.wsgi_app = application.app
+  server.run(host=ip, port=port)

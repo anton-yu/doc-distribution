@@ -49,7 +49,7 @@
 
           <div class="form-group">
               <div class="col-sm-12">
-                  <input id="btnSend" name="submit" type="submit" value="Send" class="btn btn-primary">
+                  <input id="btnSend" name="submit" type="submit" value="Search" class="btn btn-primary">
               </div>
           </div>
       </form>
@@ -57,37 +57,46 @@
     </div>
 
     <div>
-      {% if films %}
+      {% if show %}
 
-        {% if person %}
-        <h3 style="text-align:center;"> {{ person }} </h3>
+        {% if films %}
+
+          {% if person %}
+          <h3 style="text-align:center;"> {{ person }} </h3>
+          {% endif %}
+
+          <table align="center" class="table-bordered table-striped" id="filmTable" border="1">
+
+            <tr>
+              <th>Title</th>
+              <th>Year</th>
+              <th>Runtime</th>
+              <th>IMDb Distributor</th>
+              <th>Distributor</th>
+            </tr>
+          
+            {% for film in films %}
+            <tr>
+              <td>{{ film[1] }}</td>
+              <td>{{ film[2] }}</td>
+              <td>{{ film[3] }}</td>
+              <td>{{ film[4] }}</td>
+              <td>{{ film[5] }}</td>
+            </tr>
+            {% endfor %}
+          </table>
+
+        {% else %}
+
+        <h3> No results matched. </h3>
+
         {% endif %}
 
-        <table align="center" class="table-bordered table-striped" id="filmTable" border="1">
-
-          <tr>
-            <th>Title</th>
-            <th>Year</th>
-            <th>Runtime</th>
-            <th>IMDb Distributor</th>
-            <th>Distributor</th>
-          </tr>
-        
-          {% for film in films %}
-          <tr>
-            <td>{{ film[1] }}</td>
-            <td>{{ film[2] }}</td>
-            <td>{{ film[3] }}</td>
-            <td>{{ film[4] }}</td>
-            <td>{{ film[5] }}</td>
-          </tr>
-          {% endfor %}
-        </table>
       {% endif %}
     </div>
 
     <footer class="footer">
-        <p>&copy; Doc Films 2016</p>
+        <p>&copy; Anton Yu 2016</p>
     </footer>
 
   </div>
