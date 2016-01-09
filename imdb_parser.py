@@ -14,60 +14,64 @@ class Film:
     self.imdb_distr = imdb_distr
     self.distr = distributor
     self.runtime = 0
+    self.updated = False # used in update_title
 
 def add_films (films):
     infile = open("distributors.list", "r") 
 
     film_id = 0
 
-    Swank = ["Disney", "Warner", "Columbia", "Weinstein", "MGM", "Miramax", "Paramount", "Focus Features", "Lionsgate", "New Line", "Dreamworks", "RADiUS-TWC", "Tristar", "Metro-Goldwyn-Mayer", "United Artists", "RKO", "Dreamworks", "TriStar", "Sony Pictures Releasing", "Buena Vista"]
+    Swank = ["Disney", "Warner", "Columbia", "Weinstein", "MGM", "Miramax", "Paramount", "Focus Features", "Lionsgate", "New Line", "Dreamworks", "RADiUS-TWC", "Tristar", "Metro-Goldwyn-Mayer", "United Artists", "RKO", "Dreamworks", "TriStar", "Sony Pictures Releasing", "Buena Vista", "Samuel Goldwyn Company"]
     Criterion = ["Fox", "Open Road"]
 
     for line in infile:
         if line[0] != '"': # skip TV episodes 
-            if "(USA)" in line: # TODO: start with subset of films
-                if "VHS" in line or "DVD" in line or "SUSPENDED" in line:
-                    continue  
-                if "theatrical" in line or "all media" in line: 
-                    # parse title and year from first open parenthesis (denoting year)
-                    index = line.find('(') # find index of opening parenthesis 
-                    if line[index+7] is '(' or "(II)" in line[index+7:] or "(VG)" in line or "V)" in line:
-                        continue 
-                    title = line[0:index-1] # use index to parse title 
-                    year = line[index+1:index+5] # use index to parse year
-                    if year[0] != '1' and year[0] != '2':
-                        continue # TODO: can't be parentheses in film title
-                    if line[index+5] == '/':
-                        index += 6
+            # parse title and year from first open parenthesis (denoting year)
+            index = line.find('(') # find index of opening parenthesis 
+            if "(II)" in line or "(I)" in line or "(VG)" in line or "V)" in line:
+                continue 
+            title = line[0:index-1] # use index to parse title 
+            year = line[index+1:index+5] # use index to parse year
+            if year[0] != '1' and year[0] != '2':
+                continue # TODO: can't be parentheses in film title
+            if line[index+5] == '/':
+                index += 6
+            key = title + year # key into films dict
+            imdb_distr = ""
+            distributor = ""
 
-                    # parse imdb_distributor
-                    rest = line[index+6:].lstrip() 
-                    index = rest.find('[')
-                    index2 = rest.find('(')
-                    if index == -1 or index > index2: # the '[us]' substring doesn't appear or it appears after something like '(III)'
-                        imdb_distr = rest[0:index2]
-                    else: # use the first index
-                        imdb_distr = rest[0:index]
+            # found US distrib so parse and add to films
+            if "(USA)" in line and ("theatrical" in line or "all media" in line):
+                # parse imdb_distributor
+                rest = line[index+6:].lstrip() 
+                index = rest.find('[')
+                index2 = rest.find('(')
+                if index == -1 or index > index2: # the '[us]' substring doesn't appear or it appears after something like '(III)'
+                    imdb_distr = rest[0:index2]
+                else: # use the first index
+                    imdb_distr = rest[0:index]
 
-                    if imdb_distr[0:1] == '"':
-                        continue
-                    imdb_distr = imdb_distr.rstrip();
+                if imdb_distr[0:1] == '"':
+                    continue
+                imdb_distr = imdb_distr.rstrip();
+                imdb_distr = imdb_distr.decode('cp1252').encode('utf-8')
 
-                    if "Path" in imdb_distr:
-                        imdb_distr = "Pathe Freres"
+                distributor = imdb_distr
+                if any(x in distributor for x in Swank):
+                    distributor = "Swank"
+                elif any(x in distributor for x in Criterion):
+                    distributor = "Criterion"
 
-                    distributor = imdb_distr
-                    if any(x in distributor for x in Swank):
-                        distributor = "Swank"
-                    elif any(x in distributor for x in Criterion):
-                        distributor = "Criterion"
+                # add new Film object to films dict
+                if key in films: # in case of re-releases/updated distributor, go with newest one
+                    films.pop(key, None)
+            # otherwise, check if film already in dict 
+            else:
+                if key in films:
+                    continue  # go to next line
 
-                    # add new Film object to films dict
-                    key = title + year
-                    if key in films: # in case of re-releases/updated distributor, go with newest one
-                        films.pop(key, None)
-                    films[key] = Film(film_id, title, year, imdb_distr, distributor) 
-                    film_id += 1
+            films[key] = Film(film_id, title, year, imdb_distr, distributor) 
+            film_id += 1
 
     infile.close()
 
@@ -110,15 +114,54 @@ def update_titles (films):
                 year = line[index+1:index+5] # use index to parse year
             else:
                 line = line[8:]
-                if "International: English title" in line or "USA" in line and "dubbed" not in line:
+                if "International: English title" in line or "USA" in line:
+                    if "dubbed" in line or "working title" in line or "script title" in line or "informal title" in line or "promotional abbreviation" in line or "alternative title" in line:
+                        continue 
                     key = title + year
                     if key in films:
                         f = films[key]
+                        if not f.updated and "UK" in line:
+                            continue
+                        else:
+                            f.updated = True 
                         index = line.find('(')
                         f.title = line[0:index-1] # update new title
-                        title = "" # to be safe
+
+                        # title = f.title
+                        # new_key = title + year
+                        # if new_key not in films:
+                        #     films[new_key] = Film(f.id, title, year, f.imdb_distr, f.distr) # add new entry
+                        #     films[new_key].runtime = f.runtime
+                        #     films[new_key].updated = f.updated
+                        #     films.pop(key, None) # remove old entry
+
+                    if "imdb display" in line:
+                        title = "" # don't overwrite this anymore
 
     infile.close()
+
+def update_distr (films): 
+    infile = open("updates.tsv", "r")
+    outfile = open("output.tsv", "w")
+
+    for line in infile:
+        index = line.find('|')
+        rest = line[index+1:]
+        index2 = rest.find('|')
+        title = '"' + line[:index] + '"'
+        year = '"' + line[index+1:index+5] + '"'
+        key = title + year
+
+        distr = '"' + rest[index2+1:-1] + '"'
+
+        outfile.write("UPDATE Films SET Distributor = %s WHERE Title = %s AND Year = %s;" % (distr, title, year) + '\n')
+
+        if key in films:
+            f = films[key]
+            f.distr = rest[index2+1:-1]
+
+    infile.close()
+    outfile.close()
 
 def add_people (films, person_id, input_file, join_table_file, output_file, skip):
     join_file = open(join_table_file, "w")
@@ -142,9 +185,13 @@ def add_people (films, person_id, input_file, join_table_file, output_file, skip
                 person_id += 1
                 filmography = []
                 continue
-            elif index > 0: # new director 
+            elif index > 0: # new person 
                 comma = line.find(',')
+                parenthesis = line.find('(') # e.g. L_NAME, F_NAME (I)
+                if parenthesis > 0 and parenthesis < index:
+                    index -= 4
                 person = line[comma+2:index] + " " + line[:comma]
+                person = person.decode('cp1252').encode('utf-8')
             else:
                 index = 2 # 3 tabs before every other film name per person
 
@@ -173,10 +220,12 @@ def main():
     add_films(films) # parse films from distributors.list
     add_runtimes(films)
     update_titles(films)
+    # update_distr(films) # Updated titles w/ old keys causes problems. Use update.sh instead
 
     outfile = open("films.txt", "w")
     for key in films:
         f = films[key]
+        f.title = f.title.decode('cp1252').encode('utf-8')
         outfile.write(str(f.id) + "|" + f.title + "|" + f.year + "|" + str(f.runtime) + "|" + f.imdb_distr + "|" + f.distr + '\n')
     outfile.close()
 

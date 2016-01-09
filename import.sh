@@ -33,8 +33,10 @@ CREATE TABLE Appearances (Person_ID integer, Film_ID integer);
 .import actresses.txt People
 .import actor_appears.txt Appearances
 .import actress_appears.txt Appearances
-UPDATE Films SET Distributor = "Park Circus" WHERE Title = "Stella Dallas";
 EOF
+
+# Update database as needed
+#./update.sh
 
 # Clean up 
 rm *.list
