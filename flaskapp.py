@@ -25,7 +25,6 @@ def title_query():
     titles = request.form['inputTitles'].split('\r\n')
     films = []
     for title in titles:
-      print title
       query = '%' + title + '%'
       if 'shorts' not in request.form:
         results = g.db.execute('SELECT * FROM Films WHERE Title LIKE ? AND Runtime > 55', [query]).fetchall()
