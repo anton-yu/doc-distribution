@@ -21,19 +21,36 @@ def index():
 
 @app.route('/', methods=['POST'])
 def title_query():
-  if request.form['inputTitle']:
-    title = request.form['inputTitle']
-    # sql = "select * from films where title like '%"+title+"%'"
-    # films = g.db.execute(sql).fetchall()
-    films = g.db.execute('SELECT * FROM Films WHERE Title = ?', [title]).fetchall()
-    return render_template('index.html', films = films, show = 'true')
+  if request.form['inputTitles']:
+    titles = request.form['inputTitles'].split('\r\n')
+    films = []
+    for title in titles:
+      print title
+      query = '%' + title + '%'
+      if 'shorts' not in request.form:
+        results = g.db.execute('SELECT * FROM Films WHERE Title LIKE ? AND Runtime > 55', [query]).fetchall()
+      else:
+        results = g.db.execute('SELECT * FROM Films WHERE Title LIKE ?', [query]).fetchall()
+      for r in results:
+        films.insert(0, r)
+    return render_template('index.html', films = films, show = 'true')  
   elif request.form['inputCast']:
     cast = request.form['inputCast']
-    films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Appearances WHERE People.Person_ID = Appearances.Person_ID AND Films.Film_ID = Appearances.Film_ID AND Name = ? ORDER BY Year', [cast]).fetchall()
+    # query = '%' + cast + '%'
+    # films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Appearances WHERE People.Person_ID = Appearances.Person_ID AND Films.Film_ID = Appearances.Film_ID AND Name LIKE ? ORDER BY Year', [query]).fetchall()
+    if 'shorts' not in request.form:
+      films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Appearances WHERE People.Person_ID = Appearances.Person_ID AND Films.Film_ID = Appearances.Film_ID AND Name = ? AND Runtime > 55 ORDER BY Year', [cast]).fetchall()
+    else:
+      films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Appearances WHERE People.Person_ID = Appearances.Person_ID AND Films.Film_ID = Appearances.Film_ID AND Name = ? ORDER BY Year', [cast]).fetchall()      
     return render_template('index.html', person = cast, films = films, show = 'true')
   else:
     director = request.form['inputDirector']
-    films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Directs WHERE People.Person_ID = Directs.Person_ID AND Films.Film_ID = Directs.Film_ID AND Name = ? ORDER BY Year', [director]).fetchall()
+    # query = '%' + director + '%'
+    # films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Directs WHERE People.Person_ID = Directs.Person_ID AND Films.Film_ID = Directs.Film_ID AND Name LIKE ? ORDER BY Year', [query]).fetchall()
+    if 'shorts' not in request.form:
+      films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Directs WHERE People.Person_ID = Directs.Person_ID AND Films.Film_ID = Directs.Film_ID AND Name = ? AND Runtime > 55 ORDER BY Year', [director]).fetchall()
+    else:
+      films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Directs WHERE People.Person_ID = Directs.Person_ID AND Films.Film_ID = Directs.Film_ID AND Name = ? ORDER BY Year', [director]).fetchall()
     return render_template('index.html', person = director, films = films, show = 'true')
 
 if __name__ == '__main__':

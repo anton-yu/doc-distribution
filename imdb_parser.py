@@ -21,7 +21,7 @@ def add_films (films):
 
     film_id = 0
 
-    Swank = ["Disney", "Warner", "Columbia", "Weinstein", "MGM", "Miramax", "Paramount", "Focus Features", "Lionsgate", "New Line", "Dreamworks", "RADiUS-TWC", "Tristar", "Metro-Goldwyn-Mayer", "United Artists", "RKO", "Dreamworks", "TriStar", "Sony Pictures Releasing", "Buena Vista", "Samuel Goldwyn Company"]
+    Swank = ["Disney", "Warner", "Columbia", "Weinstein", "MGM", "Miramax", "Paramount", "Focus Features", "Lionsgate", "New Line", "Dreamworks", "RADiUS-TWC", "Tristar", "Metro-Goldwyn-Mayer", "United Artists", "RKO", "Dreamworks", "TriStar", "Sony Pictures Releasing", "Buena Vista", "Samuel Goldwyn Company", "Selznick"]
     Criterion = ["Fox", "Open Road"]
 
     for line in infile:
@@ -85,10 +85,16 @@ def add_runtimes (films):
             year = line[index+1:index+5] # use index to parse year
             key = title + year
 
-            index2 = line.find('\t')
+            index2 = line.find('\t') # runtime located after the tab
             if index2 <= 0:
                 continue
-            rest = line[index2+1:]
+
+            stop = line[index2+1:].find('(') + index2 + 1 # sometimes extraneous info after runtime
+            if stop > index2 + 1:
+                rest = line[index2+1:stop]
+            else:
+                rest = line[index2+1:]
+
             runtime = filter(lambda x: x.isdigit(), rest)
 
             if key in films:
@@ -105,6 +111,7 @@ def update_titles (films):
 
     title = ""
     year = ""
+    filtered = ["dubbed", "working title", "script title", "informal title", "promotional", "alternative title", "complete title"]
 
     for line in infile:
         if line[0] != '"': # skip TV episodes
@@ -115,7 +122,7 @@ def update_titles (films):
             else:
                 line = line[8:]
                 if "International: English title" in line or "USA" in line:
-                    if "dubbed" in line or "working title" in line or "script title" in line or "informal title" in line or "promotional abbreviation" in line or "alternative title" in line:
+                    if any(x in line for x in filtered):
                         continue 
                     key = title + year
                     if key in films:
