@@ -5,6 +5,7 @@ Based on the OpenShift Flask Quickstart: https://github.com/openshift-quickstart
 Available at: http://docfilms-distributiondb.rhcloud.com/
 
 To Run Locally:
+
 1. Import from IMDb: ./import.sh
 
 2. Optional: Apply any updates to the database
