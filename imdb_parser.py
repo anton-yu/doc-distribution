@@ -21,8 +21,8 @@ def add_films (films):
 
     film_id = 0
 
-    Swank = ["Disney", "Warner", "Columbia", "Weinstein", "MGM", "Miramax", "Paramount", "Focus Features", "Lionsgate", "New Line", "Dreamworks", "RADiUS-TWC", "Tristar", "Metro-Goldwyn-Mayer", "United Artists", "RKO", "Dreamworks", "TriStar", "Sony Pictures Releasing", "Buena Vista", "Samuel Goldwyn Company", "Selznick"]
-    Criterion = ["Fox", "Open Road"]
+    Swank = ["Disney", "Warner", "Columbia", "Weinstein", "MGM", "Miramax", "Paramount", "Focus Features", "Lionsgate", "New Line", "Dreamworks", "DreamWorks", "RADiUS-TWC", "Tristar", "Metro-Goldwyn-Mayer", "United Artists", "RKO", "Dreamworks", "TriStar", "Sony Pictures Releasing", "Buena Vista", "Samuel Goldwyn Company", "Selznick"]
+    Criterion = ["Fox", "Open Road", "Palisades Tartan"]
 
     for line in infile:
         if line[0] != '"': # skip TV episodes 

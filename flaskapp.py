@@ -25,11 +25,26 @@ def title_query():
     titles = request.form['inputTitles'].split('\r\n')
     films = []
     for title in titles:
-      query = '%' + title + '%'
-      if 'shorts' not in request.form:
-        results = g.db.execute('SELECT * FROM Films WHERE Title LIKE ? AND Runtime > 55', [query]).fetchall()
+      if title.isspace() or title is "" or not title:
+        continue
+      year_start = title.rfind('(')
+      year_end = title.rfind(')')
+      year = ""
+      if year_start != -1 and year_end != -1 and year_end - year_start == 5:
+        year = title[year_start+1:year_end]
+        query = '%' + title[:year_start-1] + '%'
       else:
-        results = g.db.execute('SELECT * FROM Films WHERE Title LIKE ?', [query]).fetchall()
+        query = '%' + title + '%'
+      if 'shorts' not in request.form:
+        if year:
+          results = g.db.execute('SELECT * FROM Films WHERE Title LIKE ? AND Year = ? AND Runtime > 55', [query, year]).fetchall()          
+        else:
+          results = g.db.execute('SELECT * FROM Films WHERE Title LIKE ? AND Runtime > 55', [query]).fetchall()
+      else:
+        if year:
+          results = g.db.execute('SELECT * FROM Films WHERE Title LIKE ? AND Year = ?', [query, year]).fetchall()          
+        else:
+          results = g.db.execute('SELECT * FROM Films WHERE Title LIKE ?', [query]).fetchall()
       for r in results:
         films.insert(0, r)
     return render_template('index.html', films = films, show = 'true')  
