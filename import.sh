@@ -36,7 +36,7 @@ CREATE TABLE Appearances (Person_ID integer, Film_ID integer);
 EOF
 
 # Update database as needed
-#./update.sh
+./update.sh
 
 # Clean up 
 rm *.list

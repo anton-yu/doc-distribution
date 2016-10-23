@@ -16,10 +16,11 @@
   <style>
     table { border-collapse: collapse; }
     table,th { text-align: center; }
-    h3 { margin-bottom: 30px;}
+    h3 { margin-bottom: 15px;}
     th { padding: 5px; height: 25px; background: #0e0b52; color: #fff; }
     td { padding: 5px; } 
     footer { margin-top: 30px; }
+    h6 { font-weight: normal; }
   </style> 
 
 </head>
@@ -29,6 +30,12 @@
   <div class="container"> 
     <div class="jumbotron">
       <h3>Non-Theatrical Distribution Database</h3>
+
+      <h5> Search for the non-theatrical rights-holders for films by title, cast member, or director.</h5>
+
+      <h6> Searches by title are case insensitive and accept partial titles. To help narrow down results, include the film year in parentheses after the title (i.e. "godfather (1972)"). Multiple titles can be searched for at a time.</h6>
+
+      <h6>Searches by cast member or director ARE case sensitive and must include the person's full name as it appears on IMDb.</h6> 
 
       <form class="form-horizontal" role="form" method="POST" action="">
 
@@ -81,6 +88,9 @@
 
             <tr>
               <th>Title</th>
+              {% if not person %}
+              <th>Director</th>
+              {% endif %}
               <th>Year</th>
               <th>Runtime</th>
               <th>IMDb Distributor</th>
@@ -89,7 +99,10 @@
           
             {% for film in films %}
             <tr>
+              <td>{{ film[0] }}</td>
+              {% if not person %}
               <td>{{ film[1] }}</td>
+              {% endif %}
               <td>{{ film[2] }}</td>
               <td>{{ film[3] }}</td>
               <td>{{ film[4] }}</td>
