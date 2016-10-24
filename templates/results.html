@@ -14,28 +14,61 @@
   <script src="../static/jquery-1.11.3.min.js"></script>
 
   <style>
-    table { border-collapse: collapse; }
-    h2,h3,h5,table,th { text-align: center; }
+    table { border-collapse: collapse; margin-bottom: 15px; }
+    table,th,h3,h4 { text-align: center; }
+    h2 { margin-bottom: 15px; text-align: center;}
     th { padding: 5px; height: 25px; background: #0e0b52; color: #fff; }
     td { padding: 5px; } 
     footer { margin-top: 30px; }
+    h6 { font-weight: normal; }
   </style> 
 
 </head>
  
 <body>
   <div class="container"> 
-    <h2>Non-Theatrical Distribution Database</h2>
 
-    <h5> Search for the non-theatrical rights-holders for films by title, cast member, or director.</h5>
+  <h2> Non-Theatrical Distribution Database </h2>
+  <h3> Results </h3>
 
-    <p> Searches by title are case insensitive and accept partial titles. To help narrow down results, include the film year in parentheses after the title (i.e. "godfather (1972)"). Multiple titles can be searched for at a time.</p>
+    <div class="table-responsive">
+      {% if films %}
 
-    <p>Searches by cast member or director ARE case sensitive and must include the person's full name as it appears on IMDb.</p> 
+        {% if person %}
+        <h4> {{ person }} </h4>
+        {% endif %}
+
+        <table align="center" class="table-bordered table-striped" id="filmTable" border="1">
+
+          <tr>
+            <th>Title</th>
+            <th>Year</th>
+            <th>Runtime</th>
+            <th>IMDb Distributor</th>
+            <th>Distributor</th>
+          </tr>
+        
+          {% for film in films %}
+          <tr>
+            <td>{{ film[0] }}</td>
+            <td>{{ film[1] }}</td>
+            <td>{{ film[2] }}</td>
+            <td>{{ film[3] }}</td>
+            <td>{{ film[4] }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+
+      {% else %}
+
+      <h3> No results matched. </h3>
+
+      {% endif %}
+
+    </div>
 
     <div class="jumbotron">
-
-      <h3> Search </h3>
+      <h3>Search Again</h3>
 
       <form class="form-horizontal" role="form" method="POST" action="">
 
