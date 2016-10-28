@@ -8,10 +8,6 @@ curl ftp://ftp.fu-berlin.de/pub/misc/movies/database/actresses.list.gz | gzip -d
 curl ftp://ftp.fu-berlin.de/pub/misc/movies/database/running-times.list.gz | gzip -d > running-times.list
 curl ftp://ftp.fu-berlin.de/pub/misc/movies/database/aka-titles.list.gz | gzip -d > aka-titles.list
 
-# for ((i=0;i<${#URLS[@]};++i)); do
-#   curl ${URLS[i]} | gzip -d > ${FILES[i]}
-# done
-
 # Parse IMDb's input files
 python imdb_parser.py
 

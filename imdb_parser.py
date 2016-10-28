@@ -60,7 +60,7 @@ def add_films (films):
                 if any(x in distributor for x in Swank):
                     distributor = "Swank"
                 elif any(x in distributor for x in Criterion):
-                    distributor = "Criterion"
+                    distributor = "Criterion Pictures"
 
                 # add new Film object to films dict
                 if key in films: # in case of re-releases/updated distributor, go with newest one
@@ -133,14 +133,6 @@ def update_titles (films):
                             f.updated = True 
                         index = line.find('(')
                         f.title = line[0:index-1] # update new title
-
-                        # title = f.title
-                        # new_key = title + year
-                        # if new_key not in films:
-                        #     films[new_key] = Film(f.id, title, year, f.imdb_distr, f.distr) # add new entry
-                        #     films[new_key].runtime = f.runtime
-                        #     films[new_key].updated = f.updated
-                        #     films.pop(key, None) # remove old entry
 
                     if "imdb display" in line:
                         title = "" # don't overwrite this anymore
@@ -227,7 +219,6 @@ def main():
     add_films(films) # parse films from distributors.list
     add_runtimes(films)
     update_titles(films)
-    # update_distr(films) # Updated titles w/ old keys causes problems. Use update.sh instead
 
     outfile = open("films.txt", "w")
     for key in films:
