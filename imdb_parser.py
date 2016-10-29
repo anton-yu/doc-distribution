@@ -21,7 +21,7 @@ def add_films (films):
 
     film_id = 0
 
-    Swank = ["Disney", "Warner", "Columbia", "Weinstein", "MGM", "Miramax", "Paramount", "Focus Features", "Lionsgate", "New Line", "Dreamworks", "DreamWorks", "RADiUS-TWC", "Tristar", "Metro-Goldwyn-Mayer", "United Artists", "RKO", "Dreamworks", "TriStar", "Sony Pictures Releasing", "Buena Vista", "Samuel Goldwyn Company", "Selznick"]
+    Swank = ["Disney", "Warner", "Columbia", "Weinstein", "MGM", "Miramax", "Paramount", "Focus Features", "Lionsgate", "New Line", "Dreamworks", "DreamWorks", "RADiUS-TWC", "Tristar", "Metro-Goldwyn-Mayer", "United Artists", "RKO", "Dreamworks", "TriStar", "Sony Pictures Releasing", "Buena Vista", "Samuel Goldwyn Company", "Selznick", "CBS Films", "Orion Pictures"]
     Criterion = ["Fox", "Open Road", "Palisades Tartan"]
 
     for line in infile:
