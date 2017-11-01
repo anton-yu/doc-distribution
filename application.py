@@ -1,25 +1,26 @@
 import sqlite3
-from flask import Flask, render_template, json, request, g
-app = Flask(__name__)
-app.config.from_pyfile('flaskapp.cfg')
+from flask import Flask, render_template, request, g
+
+application = Flask(__name__)
+application.debug=True
 
 DATABASE = './distributors.db'
 
-@app.before_request
+@application.before_request
 def get_db():
   g.db = sqlite3.connect(DATABASE)
 
-@app.teardown_request
+@application.teardown_request
 def close_connection(exception):
   db = getattr(g, '_database', None)
   if db is not None:
       db.close()
 
-@app.route('/')
+@application.route('/')
 def index():
   return render_template('index.html')
 
-@app.route('/', methods=['POST'])
+@application.route('/', methods=['POST'])
 def title_query():
   if request.form['inputTitles']:
     titles = request.form['inputTitles'].split('\r\n')
@@ -50,8 +51,6 @@ def title_query():
     return render_template('results.html', films = films)  
   elif request.form['inputCast']:
     cast = request.form['inputCast']
-    # query = '%' + cast + '%'
-    # films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Appearances WHERE People.Person_ID = Appearances.Person_ID AND Films.Film_ID = Appearances.Film_ID AND Name LIKE ? ORDER BY Year', [query]).fetchall()
     if 'shorts' not in request.form:
       films = g.db.execute('SELECT Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Appearances WHERE People.Person_ID = Appearances.Person_ID AND Films.Film_ID = Appearances.Film_ID AND Name = ? AND Runtime > 55 ORDER BY Year', [cast]).fetchall()
     else:
@@ -59,8 +58,6 @@ def title_query():
     return render_template('results.html', person = cast, films = films)
   else:
     director = request.form['inputDirector']
-    # query = '%' + director + '%'
-    # films = g.db.execute('SELECT Name, Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Directs WHERE People.Person_ID = Directs.Person_ID AND Films.Film_ID = Directs.Film_ID AND Name LIKE ? ORDER BY Year', [query]).fetchall()
     if 'shorts' not in request.form:
       films = g.db.execute('SELECT Title, Year, Runtime, IMDb_Distributor, Distributor FROM Films JOIN People JOIN Directs WHERE People.Person_ID = Directs.Person_ID AND Films.Film_ID = Directs.Film_ID AND Name = ? AND Runtime > 55 ORDER BY Year', [director]).fetchall()
     else:
@@ -68,4 +65,4 @@ def title_query():
     return render_template('results.html', person = director, films = films)
 
 if __name__ == '__main__':
-  app.run()
+    application.run()
