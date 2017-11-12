@@ -6,6 +6,8 @@ Background
 
 This database uses data from IMDb's alternative text interfaces to determine the non-theatrical film distributors for given titles. This tool is intended to help programmers at Doc Films reduce the time spent manually searching for distributors on IMDb or other websites, and to provide that distribution information in a single resource. 
 
+Update: As of 2017, IMDb has altered its datasets, which no longer include distributors, so no new films will be added for the moment.
+
 Usage
 -----
 
